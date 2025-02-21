@@ -378,4 +378,3 @@ class buffer:
         self.values['target_y'] = []
         self.values['target_radius'] = []
 
-# Test
