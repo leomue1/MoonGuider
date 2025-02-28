@@ -16,7 +16,7 @@ import relay_handling
 import config_loader
 
 
-
+config=config_loader.configuration()
 
 
 def capture():
@@ -56,7 +56,7 @@ def capture():
     # Capture and save a single image
     img = picam.capture_array()
     print("Image captured.")
-
+    # calc.calculation.preprocessing(img)
     image_path = os.path.join(folder_path, 'calibration_img.png')
     cv.imwrite(image_path, img)
 
@@ -66,7 +66,9 @@ def capture():
     cv.destroyAllWindows()
 
 
-
+relay_pins = config.relay_pins
+#
+calib_relay_pins = [relay_pins[0], relay_pins[2], relay_pins[1], relay_pins[3]]
 # Read the moon's initial starting position
 calib_img = capture()
 processed_calib_img = calc.calculation.preprocessing(calib_img)
@@ -74,8 +76,14 @@ starting_pos = calc.calculation.moonposition(processed_calib_img)
 print(starting_pos)
 
 # For each moving direction (Ra+, Ra-, Dec+, Dec-): Trigger the relay for n seconds, read end position and move back
+"""
+for pin in calib_relay_pins:
+    relay_handling.guide.pulse(pin, 1, 5.0, 0.1)
+    capture()
 
 
+    relay_handling.guide.pulse(pin+2, 1, 5.0, 0.1)
+"""
     # Read starting position again and compare as a fail-safe
 
     # Compute travelled distance s
