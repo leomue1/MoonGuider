@@ -68,7 +68,10 @@ def capture():
 
 
 # Read the moon's initial starting position
-
+calib_img = capture()
+processed_calib_img = calc.calculation.preprocessing(calib_img)
+starting_pos = calc.calculation.moonposition(processed_calib_img)
+print(starting_pos)
 
 # For each moving direction (Ra+, Ra-, Dec+, Dec-): Trigger the relay for n seconds, read end position and move back
 
