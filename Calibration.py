@@ -141,4 +141,22 @@ pixels_per_second_averaged = np.mean(pixels_per_second)
 # Compute pulse_multiplier as inverse of averaged pixels per second
 pulse_multi = 1/pixels_per_second_averaged
 
+# Load and read config.ini file
+edit_config = configparser.ConfigParser()
+edit_config.read("config.ini")
+
+# Modify pulse_multiplier in all file sections
+# Specify value that should be updated -> pulse_multiplier
+updated_value = "pulse_multiplier"
+# Loop through all sections to check if pulse multiplier is in there. If yes, replace it with the 
+# new value
+for section in edit_config.sections:
+    if updated_value in edit_config[section]:
+        edit_config[section][updated_value] = pulse_multi
+# Save changes back to the file
+with open("config.ini", "w") as configfile:
+    edit_config.write(configfile)
+
+print("Updated {updated_value} to {pulse_multi} in every relevant section successfully.")
+
 alpha_averaged = np.mean(alpha)
