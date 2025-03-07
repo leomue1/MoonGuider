@@ -122,3 +122,23 @@ calibDeviations=perform_calibration(trigger_time)
 print(calibDeviations)
 
 
+# Compute travelled distance s
+s = [[(a**2 + b**2)**0.5 for a, b in calibDeviations]]
+
+# Compute pixels per second
+pixels_per_second = [x/trigger_time for x in s]
+print(pixels_per_second)
+
+# Compute rotation angle alpha
+alpha = np.arctan(b/a for a, b in calibDeviations)
+
+
+# Average results
+s_averaged = np.mean(s)  
+
+pixels_per_second_averaged = np.mean(pixels_per_second)
+
+# Compute pulse_multiplier as inverse of averaged pixels per second
+pulse_multi = 1/pixels_per_second_averaged
+
+alpha_averaged = np.mean(alpha)
