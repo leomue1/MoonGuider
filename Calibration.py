@@ -102,6 +102,23 @@ def perform_calibration(moving_time):
     return deviations
 
 
+# Configuration for capturing HQ images
+camera_config = picam.create_video_configuration(
+    main={'format': 'RGB888', "size": config.image_size},
+    buffer_count=config.image_buffer)
+picam.configure(camera_config)
+picam.start()
 
+# Capture image for calculating the center
+testimg = picam.capture_array()
+shape = testimg.shape
+
+# Center Point of the Image in (X,Y) Coordinates
+image_center = (int(shape[1]//2), int(shape[0]//2))
+(reference_x, reference_y) = image_center
+
+trigger_time=5
+calibDeviations=perform_calibration(trigger_time)
+print(calibDeviations)
 
 
