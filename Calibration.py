@@ -150,3 +150,53 @@ shape = testimg.shape
 # Center Point of the Image in (X,Y) Coordinates
 image_center = (int(shape[1]//2), int(shape[0]//2))
 (reference_x, reference_y) = image_center
+
+"""
+
+# Compute travelled distance s
+s = [(a**2 + b**2)**0.5 for a, b in calibDeviations]
+print(s)
+
+# Compute pixels per second
+pixels_per_second = [a/trigger_time for a in s]
+print(pixels_per_second)
+
+# Compute rotation angle alpha
+alpha = [np.degrees(np.arctan(b / a)) if a != 0 else np.pi/2 for a, b in calibDeviations]
+alpha_converted = [float(x)for x in alpha]
+print(alpha_converted)
+
+# Average results
+s_averaged = np.mean(s)  
+print(s_averaged)
+
+pixels_per_second_averaged = np.mean(pixels_per_second)
+print(pixels_per_second_averaged)
+
+# Compute pulse_multiplier as inverse of averaged pixels per second
+pulse_multi = 1/pixels_per_second_averaged
+print(pulse_multi)
+
+
+# Load and read config.ini file
+edit_config = configparser.ConfigParser()
+edit_config.read("config.ini")
+
+# Modify pulse_multiplier in all file sections
+# Specify value that should be updated
+updated_value = "pulse_multiplier"
+# Loop through all sections to check if pulse multiplier is in there. If yes, replace it with the 
+# new value
+for section in edit_config.sections:
+    if updated_value in edit_config[section]:
+        edit_config[section][updated_value] = pulse_multi
+# Save changes back to the file
+with open("config.ini", "w") as configfile:
+    edit_config.write(configfile)
+
+print("Updated {updated_value} to {pulse_multi} in every relevant section successfully.")
+
+alpha_averaged = np.mean(alpha_converted)
+print(alpha_averaged)
+
+"""
