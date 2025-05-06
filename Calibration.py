@@ -25,6 +25,27 @@ picam=Picamera2()
 
 relay_pins = config.relay_pins
 
+def average_moon_position(samples, delay):
+    """
+    This function takes a number of samples of the current position with a certain time delay 
+    between each sample and outputs the average of the x and y positions and the radius. The
+    amount of samples and the delay can be specified on the Moon Guider screen before running 
+    the program.
+    """
+    x_vals, y_vals, r_vals = [], [], []
+    for _ in range(samples):
+        img = picam.capture_array()
+        processed = clc.preprocessing(img)
+        x, y, r = clc.moonposition(processed)
+        x_vals.append(x)
+        y_vals.append(y)
+        r_vals.append(r)
+        time.sleep(delay)
+    return (
+        sum(x_vals) / len(x_vals),
+        sum(y_vals) / len(y_vals),
+        sum(r_vals) / len(r_vals),
+    )
 
 def perform_calibration(moving_time, samples, delay):
     """ 
