@@ -62,6 +62,7 @@ class configuration:
             self.cloud_mode = self.config[self.profile]['cloud_mode']
         self.record_buffer = int(self.config[self.profile]['record_buffer'])
         self.rotate = int(self.config[self.profile]['rotate'])
+        #self.rotatation_angle = int(self.config[self.profile]['rotation_angle'])
 
         # Camera #
         self.in_scale = float(self.config[self.profile]['in_scale'])
