@@ -151,6 +151,35 @@ shape = testimg.shape
 image_center = (int(shape[1]//2), int(shape[0]//2))
 (reference_x, reference_y) = image_center
 
+trigger_time = input("Enter trigger time in seconds:")
+# Convert it to a float (with error handling)
+try:
+    trigger_time = float(trigger_time)
+except ValueError:
+    print("Invalid input. Please enter a number.")
+    exit(1)
+
+avg_samples = input("How many samples should be taken for averaging?:")
+try:
+    avg_samples = int(avg_samples)
+except ValueError:
+    print("Invalid input. Please enter integer for samples and float for delay.")
+    exit(1)
+
+avg_delay = input("How much delay between the averaging samples?:")
+try:
+    avg_delay = float(avg_delay)
+except ValueError:
+    print("Invalid input. Please enter integer for samples and float for delay.")
+    exit(1)
+
+cycles = input("Enter number of Calibration cycles:")
+try:
+    cycles = int(cycles)
+except ValueError:
+    print("Invalid input. Please enter an integer.")
+    exit(1)
+
 """
 
 # Compute travelled distance s
