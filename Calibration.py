@@ -30,7 +30,7 @@ def average_moon_position(samples, delay):
     This function takes a number of samples of the current position with a certain time delay 
     between each sample and outputs the average of the x and y positions and the radius. The
     amount of samples and the delay can be specified on the Moon Guider screen before running 
-    the program.
+    the program. It should compensate for small errors.
     """
     x_vals, y_vals, r_vals = [], [], []
     for _ in range(samples):
