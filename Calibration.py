@@ -180,6 +180,39 @@ except ValueError:
     print("Invalid input. Please enter an integer.")
     exit(1)
 
+for i in range(cycles):
+    print(f"\nStarting calibration run {i + 1}...")
+    calibDeviations, calibInitialPos, calibFinalPos = perform_calibration(trigger_time, avg_samples, avg_delay)
+
+    csv_filename = f"calibration_results_{int(trigger_time)}s_mov.csv"
+    file_exists = os.path.isfile(csv_filename)
+
+    with open(csv_filename, mode="a", newline='') as f:
+        writer = csv.writer(f)
+
+        # Write header once if needed
+        if not file_exists:
+            writer.writerow([
+                "RunID", "Direction",
+                "Initial_X", "Initial_Y", "Initial_Radius",
+                "Final_X", "Final_Y", "Final_Radius",
+                "Dev_X", "Dev_Y"
+            ])
+
+        run_id = int(time.time())
+        directions = ["right", "left", "down", "up"]
+
+        for j, (init, final, dev) in enumerate(zip(calibInitialPos, calibFinalPos, calibDeviations)):
+            direction = directions[j]
+            writer.writerow([
+                run_id, direction,
+                init[0], init[1], init[2],     # Initial position + radius
+                final[0], final[1], final[2],  # Final position + radius
+                dev[0], dev[1]                 # X/Y deviation
+            ])
+
+    print(f"Calibration run {i + 1} saved to {csv_filename}.")
+
 """
 
 # Compute travelled distance s
