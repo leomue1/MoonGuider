@@ -29,6 +29,7 @@ from picamera2 import Picamera2
 import time
 import relay_handling as relay
 import config_loader as load
+import calibration as calib
 
 
 def perform_relay_test():
@@ -267,6 +268,62 @@ if __name__ == '__main__':
         perform_relay_test()
 
     lock_moon_size()
+
+    picam.stop()
+    time.sleep(1)
+    picam.start()
+
+    # Show camera with prompt asking to run calibration
+    cv.namedWindow('Camera Output', cv.WINDOW_NORMAL)
+    cv.setWindowProperty('Camera Output', cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
+
+    org_image = picam.capture_array()
+    processed = clc.preprocessing(org_image)
+    (target_x, target_y, target_radius) = clc.moonposition(processed)
+
+    marked = clc.targetmarkers(
+        target_x,
+        target_y,
+        target_radius,
+        target_x,
+        target_y,
+        (0, 0),
+        org_image,
+        "Run Calibration?\nShort press = YES\nLong press (≥3s) = NO"
+    )
+
+    cv.imshow('Camera Output', marked)
+    cv.waitKey(1)
+    print("Waiting for button press to confirm calibration choice...")
+
+    # Wait for button press
+    while not guide.button_is_pressed():
+        time.sleep(0.1)
+        cv.waitKey(1)
+        
+    # Measure how long the button is held
+    start_time = time.time()
+    while guide.button_is_pressed():
+        time.sleep(0.1)
+    press_duration = time.time() - start_time
+
+    # Evaluate choice
+    if press_duration < 3:
+        print("Short press detected: Running calibration.")
+        cv.destroyAllWindows()
+        calib.main(config, picam)
+
+        # Reload configuration after calibration
+        config = load.configuration()
+
+        # re-initialize relay and calculation objects:
+        log = calc.log(config)
+        clc = calc.calculation(config)
+        guide = relay.guide(log, config)
+    else:
+        print("Long press detected: Skipping calibration.")
+        cv.destroyAllWindows()
+
 
     # Start timer for runtime display
     start_time = time.time()
