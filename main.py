@@ -29,7 +29,7 @@ from picamera2 import Picamera2
 import time
 import relay_handling as relay
 import config_loader as load
-import calibration as calib
+import Calibration as calib
 
 
 def perform_relay_test():
