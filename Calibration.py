@@ -324,6 +324,12 @@ def main(config=None, picam=None):
     # Compute pixels per second for every direction
     pixels_per_second = [a / moving_time for a in s]
 
+    # Compute average of pixels per second over all directions
+    pixels_per_second_averaged = np.mean(pixels_per_second)
+
+    # Compute pulse multiplier
+    pulse_multi = 1 / pixels_per_second_averaged
+
     # Define expected mount unit vectors
     mount_vectors = np.array([
         [0, 1],   # down
@@ -345,11 +351,6 @@ def main(config=None, picam=None):
     theta_rad = np.arctan2(R[1, 0], R[0, 0])
     theta_deg = np.degrees(theta_rad)
 
-    # Compute average of pixels per second over all directions
-    pixels_per_second_averaged = np.mean(pixels_per_second)
-
-    # Compute pulse multiplier
-    pulse_multi = 1 / pixels_per_second_averaged
 
     # Write pulse_multiplier and rotation_angle back to all sections of config.ini (excluding DEFAULT)
     
