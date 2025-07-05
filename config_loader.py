@@ -61,8 +61,7 @@ class configuration:
         else:
             self.cloud_mode = self.config[self.profile]['cloud_mode']
         self.record_buffer = int(self.config[self.profile]['record_buffer'])
-        self.rotate = int(self.config[self.profile]['rotate'])
-        #self.rotatation_angle = int(self.config[self.profile]['rotation_angle'])
+        self.rotation_angle = float(self.config[self.profile]['rotation_angle'])
 
         # Camera #
         self.in_scale = float(self.config[self.profile]['in_scale'])
@@ -78,6 +77,11 @@ class configuration:
         self.param2 = int(self.config[self.profile]['param2'])
         self.dp = int(self.config[self.profile]['dp'])
 
+        # Calibration Settings # 
+        self.samples = int(self.config[self.profile]['samples'])
+        self.delay = float(self.config[self.profile]['delay'])
+        self.moving_time = float(self.config[self.profile]['moving_time'])
+        self.backlash_threshold_percentage = float(self.config[self.profile]['backlash_threshold_percentage'])
         # General #
         self.buffer_length = int(self.config[self.profile]['buffer_length'])
         self.overlay = eval(self.config[self.profile]['overlay'])
