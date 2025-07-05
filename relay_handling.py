@@ -12,6 +12,7 @@ classes: guide
 import RPi.GPIO as GPIO
 import time
 import threading
+import numpy as np
 
 
 class guide:
@@ -49,12 +50,12 @@ class guide:
         self.margin = config.margin
         self.button_pin = config.button_pin
         self.record_buffer = config.record_buffer
-        rotate = config.rotate
+        self.rotation_angle = config.rotation_angle
         self.cloud_mode = config.cloud_mode
 
         # Pin order is RIGHT, LEFT, DOWN, UP ; -RA, +RA, -DEC, +DEC
-        relay_pins = config.relay_pins
-
+        self.relay_pins = config.relay_pins
+        
         # Create a locks for thread synchronization
         self.gpio_lock = threading.Lock()
         self.log_lock = threading.Lock()
@@ -64,19 +65,7 @@ class guide:
         # Create threads for relay activation
         self.activate_thread_ra = threading.Thread(target=self.activate_ra, daemon=True)
         self.activate_thread_dec = threading.Thread(target=self.activate_dec, daemon=True)
-
-        # Rearrange relay pins to compensate for rotated setup
-        if rotate == 90:
-            self.relay_pins = [relay_pins[3], relay_pins[2], relay_pins[0], relay_pins[1]]
-        elif rotate == 180:
-            self.relay_pins = [relay_pins[1], relay_pins[0], relay_pins[3], relay_pins[2]]
-        elif rotate == 270:
-            self.relay_pins = [relay_pins[2], relay_pins[3], relay_pins[1], relay_pins[0]]
-        else:
-            self.relay_pins = relay_pins
-            if rotate != 0:
-                raise ValueError("Only camera rotations of 0, 90, 180 or 270 Degree supported.")
-
+              
         # Errorcheck cloudmode
         if self.cloud_mode not in (None, "repeat", "Repeat"):
             raise ValueError("Cloud mode not correctly specified.")
@@ -91,6 +80,21 @@ class guide:
         # Pulse every relay once
         for pin in self.relay_pins:
             self.pulse(pin, 1)
+    
+    def rotate_deviation(self, x, y):
+        """
+        Rotates the deviation measured in the x-y camera coordinate system into the RA-DEC mount
+        coordinate system
+        """
+
+        theta = np.radians(self.rotation_angle)
+        R = np.array([
+            [np.cos(theta), np.sin(theta)],
+            [-np.sin(theta), np.cos(theta)]
+        ])
+        rotated = R @ np.array([x, y])
+        return tuple(rotated)
+    
 
     def to(self, deviation=(None, None)):
 
@@ -106,7 +110,7 @@ class guide:
                 self.deviation_records = []
 
             self.mode_info = "Active"
-            self.active_deviation = deviation
+            self.active_deviation = self.rotate_deviation(*deviation)
             self.record(deviation)
 
         # Start threads for relay activation for each axis if not already active
