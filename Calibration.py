@@ -206,7 +206,7 @@ def main(config=None, picam=None):
     clc = calc.calculation(config)
 
     relay_pins = config.relay_pins
-    moving_time = config.moving_time
+    calibration_pulse_length = config.calibration_pulse_length
     avg_samples = config.samples
     avg_delay = config.delay
 
@@ -226,13 +226,13 @@ def main(config=None, picam=None):
     print("\nStarting calibration run...")
     # Execute calibration
     calibDeviations, calibInitialPos, calibFinalPos = perform_calibration(
-        moving_time, avg_samples, avg_delay, guide, picam, clc
+        calibration_pulse_length, avg_samples, avg_delay, guide, picam, clc
     )
 
     print("\n Checking for potential backlash in all directions...")
     backlash_threshold_percentage = config.backlash_threshold_percentage
     backlash_estimates, backlash_info, messages = backlash_check(
-        calibDeviations, moving_time, backlash_threshold_percentage
+        calibDeviations, calibration_pulse_length, backlash_threshold_percentage
     )
 
     for line in messages:
@@ -264,7 +264,7 @@ def main(config=None, picam=None):
         averagedDeviations.append((avg_x, avg_y))
 
     # Save results to CSV-file
-    csv_filename = f"calibration_results_{int(moving_time)}s.csv"
+    csv_filename = f"calibration_results_{int(calibration_pulse_length)}s.csv"
     file_exists = os.path.isfile(csv_filename)
 
     # Open CSV file in append mode to store calibration results
@@ -322,7 +322,7 @@ def main(config=None, picam=None):
     s = [(a**2 + b**2)**0.5 for a, b in averagedDeviations]
 
     # Compute pixels per second for every direction
-    pixels_per_second = [a / moving_time for a in s]
+    pixels_per_second = [a / calibration_pulse_length for a in s]
 
     # Compute average of pixels per second over all directions
     pixels_per_second_averaged = np.mean(pixels_per_second)

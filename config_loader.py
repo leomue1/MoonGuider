@@ -80,7 +80,7 @@ class configuration:
         # Calibration Settings # 
         self.samples = int(self.config[self.profile]['samples'])
         self.delay = float(self.config[self.profile]['delay'])
-        self.moving_time = float(self.config[self.profile]['moving_time'])
+        self.calibration_pulse_length = float(self.config[self.profile]['calibration_pulse_length'])
         self.backlash_threshold_percentage = float(self.config[self.profile]['backlash_threshold_percentage'])
         # General #
         self.buffer_length = int(self.config[self.profile]['buffer_length'])
